@@ -60,23 +60,3 @@ def test(model, X_test, y_test, w_test):
     predictions = model.predict(X_test)
     report = classification_report(y_test, predictions, sample_weight=w_test)
     print(report)
-
-def main():
-    raw_data = load("creditcard.csv")
-    downsampled = downsampling(raw_data)
-    upweighted = upweight(downsampled)
-
-    print("Random Forest")  
-    randomforest_model, X_test, y_test, w_test = training_random_forest(upweighted)
-    test(randomforest_model, X_test, y_test, w_test)
-
-    print("Decision Tree")
-    decisiontree_model, X_test, y_test, w_test = training_decision_tree(upweighted)
-    test(decisiontree_model, X_test, y_test, w_test)
-
-    print("Logistic Regression")
-    LogisticRegression_model, X_test, y_test, w_test = training_logistic_regression(upweighted)
-    test(LogisticRegression_model, X_test, y_test, w_test)
-    
-    
-main()
