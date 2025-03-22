@@ -3,6 +3,8 @@ from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.utils import resample
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
 import pandas as pd
 
 #load data
@@ -24,12 +26,32 @@ def upweight(data):
     return data
 
 #train the model using randomforestclassifier
-def training(data):
+def training_random_forest(data):
     X = data.drop(['Class', 'Weight'], axis=1)
     y = data['Class']
     weight = data['Weight']
     X_train, X_test, y_train, y_test, w_train, w_test = train_test_split(X, y, weight, test_size=0.2, random_state=42)
     model = RandomForestClassifier()
+    model.fit(X_train, y_train, sample_weight=w_train)
+    return model, X_test, y_test, w_test
+
+#train the model using decisiontreeclassifier
+def training_decision_tree(data):
+    X = data.drop(['Class', 'Weight'], axis=1)
+    y = data['Class']
+    weight = data['Weight']
+    X_train, X_test, y_train, y_test, w_train, w_test = train_test_split(X, y, weight, test_size=0.2, random_state=42)
+    model = DecisionTreeClassifier()
+    model.fit(X_train, y_train, sample_weight=w_train)
+    return model, X_test, y_test, w_test
+
+#train the model using logisticregression
+def training_logistic_regression(data):
+    X = data.drop(['Class', 'Weight'], axis=1)
+    y = data['Class']
+    weight = data['Weight']
+    X_train, X_test, y_train, y_test, w_train, w_test = train_test_split(X, y, weight, test_size=0.2, random_state=42)
+    model = LogisticRegression(max_iter=2000)
     model.fit(X_train, y_train, sample_weight=w_train)
     return model, X_test, y_test, w_test
 
@@ -43,7 +65,18 @@ def main():
     raw_data = load("creditcard.csv")
     downsampled = downsampling(raw_data)
     upweighted = upweight(downsampled)
-    model, X_test, y_test, w_test = training(upweighted)
-    test(model, X_test, y_test, w_test)
+
+    print("Random Forest")  
+    randomforest_model, X_test, y_test, w_test = training_random_forest(upweighted)
+    test(randomforest_model, X_test, y_test, w_test)
+
+    print("Decision Tree")
+    decisiontree_model, X_test, y_test, w_test = training_decision_tree(upweighted)
+    test(decisiontree_model, X_test, y_test, w_test)
+
+    print("Logistic Regression")
+    LogisticRegression_model, X_test, y_test, w_test = training_logistic_regression(upweighted)
+    test(LogisticRegression_model, X_test, y_test, w_test)
+    
     
 main()
