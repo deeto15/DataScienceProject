@@ -6,6 +6,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
 import pandas as pd
+import pickle #used to save the models
 
 #load data
 def load(filename):
@@ -54,6 +55,11 @@ def training_logistic_regression(data):
     model = LogisticRegression(max_iter=2000)
     model.fit(X_train, y_train, sample_weight=w_train)
     return model, X_test, y_test, w_test
+
+#save model to disk
+def save_model(model, filename):
+    with open(filename, 'wb') as file:
+        pickle.dump(model, file)
 
 #test the model
 def test(model, X_test, y_test, w_test):
