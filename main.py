@@ -21,6 +21,7 @@ def main():
     pp.save_model(LogisticRegression_model, "logistic_regression_model.pkl")
     pp.test(LogisticRegression_model, X_test, y_test, w_test)
     
-    subprocess.run(["streamlit", "run", "app.py"])
+    # to be used for streamlit app to present the results
+    # subprocess.run(["streamlit", "run", "app.py"])
     
 main()
