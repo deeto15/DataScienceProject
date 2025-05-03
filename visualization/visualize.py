@@ -10,7 +10,7 @@ CURRENT_DIR = os.path.dirname(__file__)
 PARENT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir))
 sys.path.append(PARENT_DIR)
 
-import pre_processing as pp
+import models.pre_processing as pp
 
 # Define an output folder within the same directory
 OUTPUT_DIR = os.path.join(CURRENT_DIR, 'output')
