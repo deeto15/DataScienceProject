@@ -134,11 +134,9 @@ def evaluate_models():
     print(classification_report(y_test, final_predictions))
     print("Confusion Matrix:")
     print(
-        "["
-        + "\n ".join(
+        "\n ".join(
             [str(row.tolist()) for row in confusion_matrix(y_test, final_predictions)]
         )
-        + "]"
     )
 
 
