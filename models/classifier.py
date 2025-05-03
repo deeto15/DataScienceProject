@@ -104,3 +104,14 @@ final_predictions = (final_scores > best_thresh).astype(int)
 print("Best alpha:", best_alpha)
 print("Best threshold:", best_thresh)
 print(classification_report(y_test, final_predictions))
+
+
+
+#save models
+#set output directory to the one above the current directory
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_DIR = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir))
+
+classifier.save(os.path.join(OUTPUT_DIR, "classifier_nn.keras"))
+autoencoder.save(os.path.join(OUTPUT_DIR, "autoencoder.keras"))
+
