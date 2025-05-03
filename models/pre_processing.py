@@ -36,29 +36,39 @@ def upweight(data):
 
 # train the model using randomforestclassifier
 def training_random_forest(data):
-    X = data.drop(["Class", "Weight"], axis=1)
+    X = data.drop(["Class"], axis=1)
     y = data["Class"]
-    weight = data["Weight"]
-    X_train, X_test, y_train, y_test, w_train, w_test = train_test_split(
-        X, y, weight, test_size=0.2, random_state=42
+    X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.2, random_state=42)
+    model = RandomForestClassifier(
+        n_estimators=1000,             # more trees = better ensemble
+        max_depth=12,                  # allow deeper trees for capturing more structure
+        min_samples_split=10,          # reduce splitting on noise
+        min_samples_leaf=4,            # enforce smoother trees
+        max_features='sqrt',           # diversify trees by feature subsampling
+        class_weight='balanced',
+        bootstrap=True,
+        random_state=42,
+        n_jobs=-1
     )
-    model = RandomForestClassifier()
-    model.fit(X_train, y_train, sample_weight=w_train)
-    return model, X_test, y_test, w_test
+
+    model.fit(X_train, y_train)
+    return model, X_test, y_test
 
 
 # train the model using decisiontreeclassifier
 def training_decision_tree(data):
-    X = data.drop(["Class", "Weight"], axis=1)
+    X = data.drop(["Class"], axis=1)
     y = data["Class"]
-    weight = data["Weight"]
-    X_train, X_test, y_train, y_test, w_train, w_test = train_test_split(
-        X, y, weight, test_size=0.2, random_state=42
+    X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.2, random_state=42)
+    model = DecisionTreeClassifier(
+        max_depth=10,
+        min_samples_split=5,
+        min_samples_leaf=2,
+        class_weight='balanced',
+        random_state=42
     )
-    model = DecisionTreeClassifier()
-    model.fit(X_train, y_train, sample_weight=w_train)
-    return model, X_test, y_test, w_test
-
+    model.fit(X_train, y_train)
+    return model, X_test, y_test
 
 # train the model using logisticregression
 def training_logistic_regression(data):
