@@ -4,7 +4,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import joblib
 
-from sklearn.metrics import roc_curve, roc_auc_score, precision_recall_curve, average_precision_score
+from sklearn.metrics import (
+    roc_curve,
+    roc_auc_score,
+    precision_recall_curve,
+    average_precision_score,
+)
 from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -25,6 +30,3 @@ autoencoder = load_model(os.path.join(model_dir, "autoencoder.keras"))
 rf_model = joblib.load(os.path.join(model_dir, "randomforest_model.pkl"))
 dt_model = joblib.load(os.path.join(model_dir, "decisiontree_model.pkl"))
 lr_model = joblib.load(os.path.join(model_dir, "logistic_regression_model.pkl"))
-
-
-

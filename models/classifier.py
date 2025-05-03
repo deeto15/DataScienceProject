@@ -88,8 +88,12 @@ def train_and_save_models():
     output_dir = os.path.abspath(
         os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
     )
-    classifier.save(os.path.join(output_dir, "classifier_nn.keras"), include_optimizer=False)
-    autoencoder.save(os.path.join(output_dir, "autoencoder.keras"), include_optimizer=False)
+    classifier.save(
+        os.path.join(output_dir, "classifier_nn.keras"), include_optimizer=False
+    )
+    autoencoder.save(
+        os.path.join(output_dir, "autoencoder.keras"), include_optimizer=False
+    )
     print("Models saved successfully.")
 
 
