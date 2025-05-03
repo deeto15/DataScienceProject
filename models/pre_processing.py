@@ -68,7 +68,7 @@ def training_logistic_regression(data):
     X_train, X_test, y_train, y_test, w_train, w_test = train_test_split(
         X, y, weight, test_size=0.2, random_state=42
     )
-    model = LogisticRegression(max_iter=2000)
+    model = LogisticRegression(max_iter=5000)
     model.fit(X_train, y_train, sample_weight=w_train)
     return model, X_test, y_test, w_test
 
