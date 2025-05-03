@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import os
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import classification_report, f1_score
@@ -8,7 +9,10 @@ import tensorflow as tf
 from tensorflow.keras import layers, models, losses, callbacks
 
 # Load data
-df = pd.read_csv(r"c:\Users\Kendall Eberly\Downloads\creditcard.csv")
+downloads_folder = os.path.join(os.path.expanduser("~"), "Downloads")
+file_path = os.path.join(downloads_folder, "creditcard.csv")
+df = pd.read_csv(file_path)
+#df = pd.read_csv(r"c:\Users\Kendall Eberly\Downloads\creditcard.csv")
 features = df.drop("Class", axis=1)
 labels = df["Class"]
 
