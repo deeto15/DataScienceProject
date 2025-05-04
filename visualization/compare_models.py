@@ -5,7 +5,6 @@ import pandas as pd
 import joblib
 
 from sklearn.metrics import roc_curve, roc_auc_score, precision_recall_curve, average_precision_score
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 # Paths
@@ -19,41 +18,59 @@ df = pd.read_csv(data_path)
 X = df.drop("Class", axis=1)
 y = df["Class"].values
 
+# Prepare scaled version (for Logistic Regression)
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 X_scaled_df = pd.DataFrame(X_scaled, columns=X.columns)
 
+# Unscaled for tree-based models
+X_unscaled_df = X.copy()
+
 # Downsample to balance fraud and non-fraud
 fraud_df = df[df["Class"] == 1]
 nonfraud_df = df[df["Class"] == 0].sample(n=len(fraud_df), random_state=42)
-downsampled_df = pd.concat([fraud_df, nonfraud_df]).sample(frac=1, random_state=42)  # shuffle
+downsampled_df = pd.concat([fraud_df, nonfraud_df]).sample(frac=1, random_state=42)
 
 X_down = downsampled_df.drop("Class", axis=1)
 y_down = downsampled_df["Class"].values
-X_down_scaled = scaler.transform(X_down)
-X_down_df = pd.DataFrame(X_down_scaled, columns=X.columns)
+
+# Scaled and unscaled downsampled versions
+X_down_scaled_df = pd.DataFrame(scaler.transform(X_down), columns=X.columns)
+X_down_unscaled_df = X_down.copy()
 
 # Load models
 rf_model = joblib.load(os.path.join(model_dir, "randomforest_model.pkl"))
 dt_model = joblib.load(os.path.join(model_dir, "decisiontree_model.pkl"))
 lr_model = joblib.load(os.path.join(model_dir, "logistic_regression_model.pkl"))
 
-# Store scores for both datasets
+# Dataset dictionary with both scaled and unscaled versions
 datasets = {
-    "Full Dataset": (X_scaled_df, y),
-    "Downsampled Dataset": (X_down_df, y_down)
+    "Full Dataset": {
+        "scaled": X_scaled_df,
+        "unscaled": X_unscaled_df,
+        "y": y
+    },
+    "Downsampled Dataset": {
+        "scaled": X_down_scaled_df,
+        "unscaled": X_down_unscaled_df,
+        "y": y_down
+    }
 }
 
 # Plotting
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
 fig.suptitle("Model Comparison: Full vs. Downsampled Dataset", fontsize=16)
 
-for row_idx, (label, (X_eval, y_eval)) in enumerate(datasets.items()):
-    # Prediction scores
+for row_idx, (label, data) in enumerate(datasets.items()):
+    X_scaled = data["scaled"]
+    X_unscaled = data["unscaled"]
+    y_eval = data["y"]
+
+    # Use scaled only for LR, unscaled for trees
     model_scores = {
-        "Random Forest": rf_model.predict_proba(X_eval)[:, 1],
-        "Decision Tree": dt_model.predict_proba(X_eval)[:, 1],
-        "Logistic Regression": lr_model.predict_proba(X_eval)[:, 1],
+        "Random Forest": rf_model.predict_proba(X_unscaled)[:, 1],
+        "Decision Tree": dt_model.predict_proba(X_unscaled)[:, 1],
+        "Logistic Regression": lr_model.predict_proba(X_scaled)[:, 1],
     }
 
     # ROC Curve
@@ -68,7 +85,7 @@ for row_idx, (label, (X_eval, y_eval)) in enumerate(datasets.items()):
     ax_roc.set_ylabel("True Positive Rate")
     ax_roc.legend()
 
-    # PR Curve
+    # Precision-Recall Curve
     ax_pr = axes[row_idx, 1]
     for name, scores in model_scores.items():
         precision, recall, _ = precision_recall_curve(y_eval, scores)
