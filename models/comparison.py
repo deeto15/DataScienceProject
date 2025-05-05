@@ -31,3 +31,4 @@ def combine_all_predictions(models, autoencoder, X_test, y_test):
     print(classification_report(y_test, final_preds))
     print("Confusion Matrix:")
     print(confusion_matrix(y_test, final_preds))
+    return final_scores
